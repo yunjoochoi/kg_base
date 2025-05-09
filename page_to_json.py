@@ -1,12 +1,12 @@
-import fitz  # PyMuPDF
+import fitz  
 import google.generativeai as genai
 import json
 
-# 1. Gemini API 설정
+# Gemini API 설정
 genai.configure(api_key="키")
 gemini = genai.GenerativeModel("models/gemini-1.5-pro")
 
-# 2. 프롬프트 템플릿 정의
+# 프롬프트 템플릿 정의
 prompt_template = """
 다음 텍스트에서 아래 금융 항목들을 스키마에 맞는 JSON 형식으로 추출하세요.
 추출된 지표는 '리포트 내 예측값'으로 간주하고, 각 지표는 별도로 명세합니다.
@@ -63,11 +63,11 @@ prompt_template = """
 """
 
 
-# 3. PDF 열기
+# PDF 열기
 pdf_path = "/home/yunju/text_project/simple_naver_reports/크래프톤_25.04.30_SK증권.pdf"
 doc = fitz.open(pdf_path)
 
-# 4. 페이지 단위로 추출 및 Gemini 추론
+# 페이지 단위로 추출 및 Gemini 추론
 all_results = []
 from time import sleep
 for page_number in range(len(doc)):
@@ -91,10 +91,10 @@ for page_number in range(len(doc)):
         all_results.append(data)
     
     except json.JSONDecodeError:
-        print(f"⚠️ JSON 파싱 실패: 페이지 {page_number+1}")
+        print(f"JSON 파싱 실패: 페이지 {page_number+1}")
         print(response.text[:300])
 
-# 5. 결과 확인
+# 결과 확인
 print(all_results)
 # for item in all_results:
-#     print(f"📄 페이지 {item['page']} → 기업: {item.get('company')}, 지표: {[m['name'] for m in item.get('metrics', [])]}")
+#     print(f"페이지 {item['page']} → 기업: {item.get('company')}, 지표: {[m['name'] for m in item.get('metrics', [])]}")
