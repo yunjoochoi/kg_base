@@ -1,15 +1,15 @@
 import google.generativeai as genai
 from neo4j import GraphDatabase
 
-# ✅ 1. Gemini API 설정
+# =Gemini API 설정
 genai.configure(api_key="키")
 gemini = genai.GenerativeModel("models/gemini-1.5-pro")
 
-# ✅ 2. 사용자 질문
+# 사용자 질문
 user_question = "크래프톤의 2025년 1분기 영업이익 얼마임?"
 
 
-# ✅ 3. Cypher 생성 프롬프트 (지식그래프 구조 반영)
+# Cypher 생성 프롬프트 (지식그래프 구조 반영)
 cypher_prompt = f"""
 너는 금융 지식그래프에서 Cypher 쿼리를 생성하는 AI야.
 
@@ -39,11 +39,11 @@ WHERE ...
 RETURN ...
 """
 
-# ✅ 4. Gemini에게 Cypher 쿼리 생성 요청
+# Gemini에게 Cypher 쿼리 생성 요청
 response = gemini.generate_content(cypher_prompt)
 raw_response = response.text.strip()
 
-# ✅ 4-1. 코드 블록 제거
+# 코드 블록 제거
 if raw_response.startswith("```"):
     cypher_query = "\n".join(
         line for line in raw_response.splitlines()
@@ -52,22 +52,22 @@ if raw_response.startswith("```"):
 else:
     cypher_query = raw_response
 
-print("🔎 정제된 Cypher 쿼리:\n", cypher_query)
+print("정제한 Cypher 쿼리:\n", cypher_query)
 
-# ✅ 5. Neo4j 연결 설정
+# Neo4j 연결 설정
 uri = "neo4j+s://91dca365.databases.neo4j.io"
 user = "neo4j"
 password = "LDm1TfiVmKU1fzX0PUZkBUOF8PM6siBYogmWbsjzUmc"
 driver = GraphDatabase.driver(uri, auth=(user, password))
 
-# ✅ 6. Cypher 쿼리 실행 및 결과 출력
+# Cypher 쿼리 실행 및 결과 출력
 def run_cypher(query):
     with driver.session() as session:
         result = session.run(query)
         return [record.data() for record in result]
 
 result = run_cypher(cypher_query)
-print("📊 질의 결과:\n", result)
+print("질의 결과:\n", result)
 
 
 print(user_question)
